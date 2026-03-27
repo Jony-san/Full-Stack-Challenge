@@ -33,7 +33,7 @@ Desafios
 Los principales desafios para este proyecto fueron los siguentes:
  - Usar nuevos herramientas de desarollo(Hono, Next, Better Auth) a los cuales no estoy acostumbrado e implementar una logica de desarrollo estilo API para crear empresas
  - Crear politicas para filtrar información clave de los contactos, sin mostrar informacion no solicitada(empresas externas), para esto ultimo el desafio consistio en que no era a nivel código los filtros por realizar sino a nivel Base de datos.
- Implementar autenticacion con la Herramienta Better Auth dado que esta ya contiene logica de autenticación implementada como algunas rutas de registro, login y logica en el manejo de cookies de sesion
+ - Implementar autenticacion con la Herramienta Better Auth dado que esta ya contiene logica de autenticación implementada como algunas rutas de registro, login y logica en el manejo de cookies de sesion
 
 Ejecucion
 ----------
