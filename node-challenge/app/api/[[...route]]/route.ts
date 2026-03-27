@@ -82,6 +82,31 @@ app.get("/contacts/:id", async (context) => {
   return context.json(result[0] ?? null);
 });
 
+//Creacion
+app.post("/contacts", async (context) => {
+  const client = context.get("dbClient");
+  const db = drizzle(client);
+
+  const body = await context.req.json();
+
+  const parsed = createContactSchema.safeParse(body);
+
+  if (!parsed.success) {
+    return context.json({ error: parsed.error }, 400);
+  }
+
+  const tenantId = context.req.header("x-tenant-id")!;
+
+  const result = await db.insert(contacts).values({
+    tenantId,
+    name: parsed.data.name,
+    email: parsed.data.email,
+    phone: parsed.data.phone,
+  }).returning();
+
+  return context.json(result[0], 201);
+});
+
 
 app.all("*", (context) =>
   context.json({ error: "Route not found" }, 404)
