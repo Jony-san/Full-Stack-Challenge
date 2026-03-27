@@ -1,16 +1,26 @@
 import { Hono } from "hono";
-import { auth } from "@/lib/auth";
+import { auth } from "./auth";
 
 type Variables = {
-  dbClient: any; // luego lo tipamos bien con PoolClient
+  tenantId: string;
 };
 
 export const app = new Hono<{ Variables: Variables }>();
 
-// prueba simple
-app.get("/contacts", (c) => {
-  return c.json({ ok: true });
+// Tenant middleware
+app.use("/api/*", async (c, next) => {
+  const tenantId = c.req.header("x-tenant-id");
+
+  if (!tenantId) {
+    return c.json({ error: "Missing tenant" }, 400);
+  }
+
+  c.set("tenantId", tenantId);
+  await next();
 });
 
+// Auth routes (Better Auth)
+app.all("/api/auth/*", async (c) => {
+  return auth.handler(c.req.raw);
+});
 
-app.all("/auth/*", (c) => auth.handler(c.req.raw));
