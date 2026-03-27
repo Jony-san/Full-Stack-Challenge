@@ -5,6 +5,7 @@ import { contacts } from "@/db/schema";
 import type { PoolClient } from "pg";
 import { z } from "zod";
 import { eq } from "drizzle-orm";
+import { auth } from "@/lib/auth";
 
 export const runtime = "nodejs";
 
@@ -52,6 +53,11 @@ app.use("*", async (context, next) => {
   } finally {
     client.release();
   }
+});
+
+app.all("/auth/*", async (c) => {
+  //console.log("**")
+  return auth.handler(c.req.raw);
 });
 
 app.get("/example", (context) => {
