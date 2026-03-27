@@ -6,6 +6,7 @@ import type { PoolClient } from "pg";
 import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { auth } from "@/lib/auth";
+import { app } from "@/lib/app";
 
 export const runtime = "nodejs";
 
@@ -19,11 +20,9 @@ const createContactSchema = z.object({
 type Variables = {
   dbClient: PoolClient;
 };
-//Fijar base de rutas y tipear variales
-const app = new Hono<{ Variables: Variables }>().basePath("/api");
 
 //Para cada solicitud crear conexion y solicitar cabecera
-app.use("*", async (context, next) => {
+ app.use("*", async (context, next) => {
   const tenantId = context.req.header("x-tenant-id");
 
   if (!tenantId) {
@@ -53,10 +52,10 @@ app.use("*", async (context, next) => {
   } finally {
     client.release();
   }
-});
+}); 
 
 app.all("/auth/*", async (c) => {
-  //console.log("**")
+  console.log("**")
   return auth.handler(c.req.raw);
 });
 
@@ -165,8 +164,34 @@ app.all("*", (context) =>
   context.json({ error: "Route not found" }, 404)
 );
 
-export const GET = (request: Request) => app.fetch(request);
+/* export const GET = (request: Request) => app.fetch(request);
 export const POST = (request: Request) => app.fetch(request);
 export const PUT = (request: Request) => app.fetch(request);
 export const DELETE = (request: Request) => app.fetch(request);
-export const PATCH = (request: Request) => app.fetch(request);
+export const PATCH = (request: Request) => app.fetch(request); */
+
+function toHonoRequest(req: Request) {
+  const url = new URL(req.url);
+  url.pathname = url.pathname.replace(/^\/api/, "");
+  return new Request(url.toString(), req);
+}
+
+export const GET = (req: Request) => {
+  return app.fetch(toHonoRequest(req));
+};
+
+export const POST = (req: Request) => {
+  return app.fetch(toHonoRequest(req));
+};
+
+export const PUT = (req: Request) => {
+  return app.fetch(toHonoRequest(req));
+};
+
+export const DELETE = (req: Request) => {
+  return app.fetch(toHonoRequest(req));
+};
+
+export const PATCH = (req: Request) => {
+  return app.fetch(toHonoRequest(req));
+};
