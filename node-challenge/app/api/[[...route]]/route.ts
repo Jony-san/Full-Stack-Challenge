@@ -1,11 +1,9 @@
-import { Hono } from "hono";
 import { pool } from "@/db";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { contacts } from "@/db/schema";
 import type { PoolClient } from "pg";
 import { z } from "zod";
 import { eq } from "drizzle-orm";
-import { auth } from "@/lib/auth";
 import { app } from "@/lib/app";
 
 export const runtime = "nodejs";
@@ -17,9 +15,6 @@ const createContactSchema = z.object({
   phone: z.string().optional(),
 });
 
-type Variables = {
-  dbClient: PoolClient;
-};
 
 //Para cada solicitud crear conexion y solicitar cabecera
  app.use("*", async (context, next) => {
@@ -53,11 +48,6 @@ type Variables = {
     client.release();
   }
 }); 
-
-app.all("/auth/*", async (c) => {
-  console.log("**")
-  return auth.handler(c.req.raw);
-});
 
 app.get("/example", (context) => {
   console.log("Hono route hit");
