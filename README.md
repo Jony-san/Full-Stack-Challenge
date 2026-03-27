@@ -48,7 +48,7 @@ BETTER_AUTH_SECRET=supersecretkey123j1827dnryx73ni8
 ```
 Es necesario tener PostgreSQL corriendo (local o Docker).
 
-Si usas Docker:
+Ejecutar Docker:
 ```
 docker-compose up -d
 ```
