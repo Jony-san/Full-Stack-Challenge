@@ -108,6 +108,28 @@ app.post("/contacts", async (context) => {
 });
 
 
+//Eliminar
+app.delete("/contacts/:id", async (context) => {
+  const client = context.get("dbClient");
+  const db = drizzle(client);
+
+  const id = context.req.param("id");
+
+  const result = await db
+    .delete(contacts)
+    .where(eq(contacts.id, id))
+    .returning();
+
+  if (result.length === 0) {
+    return context.json({ error: "Not found" }, 404);
+  }
+
+  return context.json({ success: true });
+});
+
+
+
+
 app.all("*", (context) =>
   context.json({ error: "Route not found" }, 404)
 );
