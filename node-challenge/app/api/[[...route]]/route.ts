@@ -3,8 +3,17 @@ import { pool } from "@/db";
 import { drizzle } from "drizzle-orm/node-postgres";
 import { contacts } from "@/db/schema";
 import type { PoolClient } from "pg";
+import { z } from "zod";
+import { eq } from "drizzle-orm";
 
 export const runtime = "nodejs";
+
+
+const createContactSchema = z.object({
+  name: z.string().min(1),
+  email: z.string().email().optional(),
+  phone: z.string().optional(),
+});
 
 type Variables = {
   dbClient: PoolClient;
@@ -50,6 +59,7 @@ app.get("/example", (context) => {
   return context.json({ message: "API working" });
 });
 
+//Consulta
 app.get("/contacts", async (context) => {
   const client = context.get("dbClient");
   const db = drizzle(client);
@@ -58,6 +68,20 @@ app.get("/contacts", async (context) => {
 
   return context.json(result);
 });
+
+//Consulta por Id
+app.get("/contacts/:id", async (context) => {
+  const db = drizzle(context.get("dbClient"));
+  const id = context.req.param("id");
+
+  const result = await db
+    .select()
+    .from(contacts)
+    .where(eq(contacts.id, id));
+
+  return context.json(result[0] ?? null);
+});
+
 
 app.all("*", (context) =>
   context.json({ error: "Route not found" }, 404)
