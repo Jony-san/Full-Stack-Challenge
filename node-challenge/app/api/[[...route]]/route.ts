@@ -127,7 +127,32 @@ app.delete("/contacts/:id", async (context) => {
   return context.json({ success: true });
 });
 
+//Actualizacion
+app.put("/contacts/:id", async (context) => {
+  const client = context.get("dbClient");
+  const db = drizzle(client);
 
+  const id = context.req.param("id");
+  const body = await context.req.json();
+
+  const parsed = createContactSchema.partial().safeParse(body);
+
+  if (!parsed.success) {
+    return context.json({ error: parsed.error }, 400);
+  }
+
+  const result = await db
+    .update(contacts)
+    .set(parsed.data)
+    .where(eq(contacts.id, id))
+    .returning();
+
+  if (result.length === 0) {
+    return context.json({ error: "Not found" }, 404);
+  }
+
+  return context.json(result[0]);
+});
 
 
 app.all("*", (context) =>
