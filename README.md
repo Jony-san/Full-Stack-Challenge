@@ -68,7 +68,7 @@ npm run dev
 
 Ejecucion de Pruebas
 -----------
-Para realizar la prueba de las rutas puede usar la terminal ejecutando:
+Para realizar las prueba de las rutas puede usar la terminal ejecutando:
 
 Creacion
 ```
